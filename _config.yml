@@ -68,4 +68,6 @@ theme: hexo-theme-next
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
-  type:
+  type: git
+  repo: https://github.com/EthanCai/ethancai.github.io
+  branch: master

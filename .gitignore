@@ -34,3 +34,4 @@ node_modules
 
 # Hexo public directory
 public
+.deploy_git
