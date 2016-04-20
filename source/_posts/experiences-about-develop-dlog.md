@@ -43,13 +43,11 @@ date: 2016-04-20 02:09:39
 
 首先引用项目**readme文档**的第一段文字介绍一下`dlog`的用途：
 
-> dlog is a Go package for distributed structure logging using Amazon AWS Kinesis/Firehose. It contains two perspectives:
+> dlog is a Go package for distributed structure logging using Amazon AWS Kinesis/Firehose.
 
 更多介绍和设计请阅读[readme文档](https://github.com/topicai/dlog/blob/develop/README.md)
 
-`dlog`主要是用来记录程序的`data log`的这样一个Golang package，那什么是`data log`？这里简要解释一下。
-
-一般程序运行过程中主要产生两类日志：
+`dlog`主要是用来记录程序的`data log`的这样一个Golang package，那什么是`data log`？这里先简要解释一下。一般程序运行过程中主要产生两类日志：
 
 - `status log`：主要用于帮助调试、定位程序Bug、或者找到性能瓶颈，比如方法调用日志、错误日志、方法执行时间日志等
 - `data log`：主要用于记录用户行为，收集的`data log`用于后期的个性化搜索、智能推荐等，比如搜索行为、点击行为等
@@ -59,7 +57,7 @@ date: 2016-04-20 02:09:39
 
 - 每一种类型的`data log`对应一种`logger`，一个`logger`只能记录对应类型的`data log`
 - `dlog`内部发生的错误，不能影响调用的程序代码的执行
-    - 必须考虑到AWS Kinesis服务响应慢或者不可用的场景（暂未实现）
+    - 应考虑到AWS Kinesis服务响应慢或者不可用的场景（暂未实现）
 - 程序代码中通过调用`dlog`的方法记录`data log`，`dlog`的方法不能阻塞调用的程序代码的执行（这一点`dlog`暂时未满足要求，需要后期改进）
 - AWS Kinesis提供两个API接收数据，一个是[PutRecord](http://docs.aws.amazon.com/kinesis/latest/APIReference/API_PutRecord.html), 另一个是[PutRecords](http://docs.aws.amazon.com/kinesis/latest/APIReference/API_PutRecords.html)，为了减少对Kinesis的调用次数，采用后者批量发送`data log`
     - `PutRecords`对一次调用的`record`数量限制是`500`，每个`record`大小必须小于等于1MB，整个`request`的大小必须小于等于5MB
@@ -299,7 +297,7 @@ _执行上面代码请点击[这里](https://play.golang.org/p/eDmzxW-ayk)_
 
 ## 如何实现批量发送`data log`
 
-要实现批量发送，首先我们可以想到必须要有个`buffer`用来收集一定数量的的`message`，等待`buffer`中的数据积累到一定程度后，一次性发送给AWS Kinesis。设计`buffer`结构不难，难点在于如何解决多线程(goroutine)并发读写`buffer`的问题，主要的解决方案有两种：
+要实现批量发送，首先我们可以想到应该要有个`buffer`用来收集一定数量的的`message`，等待`buffer`中的数据积累到一定程度后，一次性发送给AWS Kinesis。设计`buffer`结构不难，难点在于如何解决多线程(goroutine)并发读写`buffer`的问题，主要的解决方案有两种：
 
 - 基于锁机制实现对`buffer`访问控制
 - 基于`channel`实现对`buffer`的访问控制
@@ -737,7 +735,7 @@ func TestRunWriteLogSuite(t *testing.T) {
 
 注：
 
-- 很多场景下，测试程序自动创建依赖的资源需要运维部门的授权。所以实现前有必要先和运维部门沟通。
+- 很多场景下，测试程序自动创建依赖的资源需要运维部门的授权，所以实现前有必要先和运维部门沟通。
 - 云环境下，出于安全上的考虑，需要对创建、删除测试资源的账户管理严格管理
     - 账户信息不能写在可以公开访问的测试代码、配置文件中
     - 只给账户分配必要资源的最小权限
@@ -745,7 +743,7 @@ func TestRunWriteLogSuite(t *testing.T) {
 
 ## 如何实现`kinesisMock`
 
-上一节我们提到在测试执行前初始化依赖资源，现实场景中，并不是任何情况下都能够获得依赖的测试资源，或者测试资源不可用。通过Mock技术，可以减少测试代码对其它资源（或模块）的依赖。
+上一节我们提到在测试执行前初始化依赖资源，现实场景中，并不是任何情况下都能够获得依赖的测试资源，或者测试资源也会出现不可用的情况。通过Mock技术，可以减少测试代码对其它资源（或模块）的依赖。
 
 `dlog`的测试代码中，首先定义了一个`KinesisInterface`:
 
@@ -869,11 +867,11 @@ func (mock *brokenKinesisMock) PutRecords(streamName string, records []kinesis.P
 }
 ```
 
-`kinesisMock`是`brokenKinesisMock`的嵌入`struct`，`brokenKinesisMock`会自动拥有`kinesisMock`的所有公开方法。
+`kinesisMock`是`brokenKinesisMock`的嵌入`struct`，`brokenKinesisMock`会自动拥有`kinesisMock`的所有公开方法，这样也就实现了`KinesisInterface`。
 
 ## 提交到代码库中的测试代码是否可以保留`log.Print`
 
-答案是“不可以”，原因总结如下：
+结论是“不可以”，原因总结如下：
 
 - 测试代码中的`log.Print`，一般用于调试代码，或者在`stdout`打印出一些信息帮助判断测试失败原因。不论哪种目的，这样的代码目的都仅仅是为了辅助开发，而不应该出现在最终交付的产品代码中。
 - `go test`命令会在控制台输出失败的测试方法，如果加上`-v`标志会打印出所有测试方法的执行结果，`log.Print`会影响执行结果的展示效果。团队合作开发，如果每个人都在测试代码中加上自己的`log.Print`，那么控制台打印出来的测试结果就没法看了。
