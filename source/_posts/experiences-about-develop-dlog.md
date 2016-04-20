@@ -324,7 +324,9 @@ digraph G {
 }
 -->
 
-![Thread Model](http://g.gravizo.com/g?digraph%20G%20%7B%0A%20%20%20%20fontname%3D%22Microsoft%20YaHei%22%3B%0A%20%20%20%20fontsize%3D10%3B%0A%20%20%20%20rankdir%20%3D%20LR%3B%0A%0A%20%20%20%20%22buffer%20channel%22%20%5Bshape%3Dbox%5D%3B%0A%0A%20%20%20%20%22Logger.Log%20goroutine%201%22%20-%3E%20%22buffer%20channel%22%3B%0A%20%20%20%20%22Logger.Log%20goroutine%202%22%20-%3E%20%22buffer%20channel%22%3B%0A%20%20%20%20%22Logger.Log%20goroutine%203%22%20-%3E%20%22buffer%20channel%22%3B%0A%20%20%20%20%22buffer%20channel%22%20-%3E%20%22sync%20goroutine%22%3B%0A%20%20%20%20%22sync%20goroutine%22%20-%3E%20%22AWS%20Kinesis%20Stream%22%3B%0A%20%7D)
+<!-- ![Thread Model](http://g.gravizo.com/g?digraph%20G%20%7B%0A%20%20%20%20fontname%3D%22Microsoft%20YaHei%22%3B%0A%20%20%20%20fontsize%3D10%3B%0A%20%20%20%20rankdir%20%3D%20LR%3B%0A%0A%20%20%20%20%22buffer%20channel%22%20%5Bshape%3Dbox%5D%3B%0A%0A%20%20%20%20%22Logger.Log%20goroutine%201%22%20-%3E%20%22buffer%20channel%22%3B%0A%20%20%20%20%22Logger.Log%20goroutine%202%22%20-%3E%20%22buffer%20channel%22%3B%0A%20%20%20%20%22Logger.Log%20goroutine%203%22%20-%3E%20%22buffer%20channel%22%3B%0A%20%20%20%20%22buffer%20channel%22%20-%3E%20%22sync%20goroutine%22%3B%0A%20%20%20%20%22sync%20goroutine%22%20-%3E%20%22AWS%20Kinesis%20Stream%22%3B%0A%20%7D) -->
+
+{% asset_img use_channel.png 使用Channel %}
 
 具体代码实现：
 
@@ -896,3 +898,61 @@ func (mock *brokenKinesisMock) PutRecords(streamName string, records []kinesis.P
 - [Amazon Kinesis Documentation](https://aws.amazon.com/cn/documentation/kinesis/)
 - [Advanced Go Concurrency Patterns](http://blog.golang.org/advanced-go-concurrency-patterns)
 - [hystrix-go](https://github.com/afex/hystrix-go)
+
+
+# 招聘消息
+
+我所在的[奥阁门科技有限公司](http://www.augmn.com)正在招聘后端、运维工程师，想加入的朋友、或者有朋友可以推荐的都可以联系我(ethancai@qq.com)。
+
+{% asset_img 2016-04-21_07-12-24.png 办公环境1 %}
+
+{% asset_img 2016-04-21_07-12-40.png 办公环境2 %}
+
+**后端工程师 / Backend Engineer**
+
+职责
+
+- 研讨和设计产品功能特性；
+- 设计研发系统后端的一个或多个独立服务（micro-service）模块；
+- 设计研发业务运营管理系统；
+- Code Review。
+
+要求
+
+- 有良好的编程习惯和代码风格；
+- 精通至少一种后台开发语言，包括但不限于Go、Node.js、C++、Python；
+- 对RESTful、RPC等架构有深刻理解和运用经验；
+- 有丰富的web service、web app开发经验；使用过著名的开源应用框架，并完整阅读过源代码；
+- 对Mysql、Redis、MongoDB或同类数据存储技术有丰富的使用经验；
+- 有提交代码到著名开源库或创建过开源项目者优先；
+- 能熟练查阅英文技术文档；
+- 有开放、坦诚的沟通心态，乐于分享；
+- 5年以上工作经验，3年以上后台系统开发经验。
+
+
+**高级系统运维工程师 / Senior Ops Engineer**
+
+职责
+
+- 负责日常业务系统基础实施（AWS）、网络及各子系统的管理维护。
+- 负责设计并部署相关应用平台，并提出平台的实施、运行报告。
+- 负责配合开发搭建测试平台，协助开发设计、推行、实施和持续改进。
+- 负责相关故障、疑难问题排查处理，编制汇总故障、问题，定期提交汇总报告。
+- 负责网络监控和应急反应，以确保网络系统有7*24小时的持续运作能力。
+- 负责日常系统维护，及监控，提供IT方面的服务和支持，保证系统的稳定。
+
+要求
+
+- 深入理解Linux/Unix操作系统并能熟练使用，了解Linux系统内核，有相关操作系统调优经验优先；
+- 熟悉计算机网络基础知识，了解TCP/IP、HTTP等网络协议；
+- 熟悉系统服务的管理和维护，例如：Nginx、DNS服务器、NTP服务等；
+- 熟悉一种或者多种脚本语言，例如：Shell、Python、Perl 、Ruby等；
+- 熟练掌握Linux管理相关命令行工具，例如：grep、awk、sed、tmux、vim等；
+- 对数据库系统（MySQL）运维管理有一定的了解；
+- 熟悉常见分布式系统系统架构部署管理，熟悉基础设施管理、并具有较强的故障排查和解决问题的能力；
+- 具有 2 年以上中大型互联网系统或亚马逊AWS管理经验者优先；
+- 有DevOps经验者优先；
+- 学习能力和沟通能力较强，具有良好的团队协作精神；
+- 工作中需要胆大心细，具备探索创新精神；
+- 具有良好的文档编写能力；
+- 具有一定的英文技术文档阅读能力。
