@@ -27,10 +27,10 @@ rss:
 # Remove leading slashes ( "/archives" -> "archives" )
 menu:
   home: /
-  #categories: /categories
+  categories: /categories
   #about: /about
   archives: /archives
-  #tags: /tags
+  tags: /tags
   #commonweal: /404.html
 
 
@@ -86,7 +86,7 @@ social_icons:
 # in theme directory(source/images): /images/avatar.jpg
 # in site  directory(source/uploads): /uploads/avatar.jpg
 # default : /images/default_avatar.jpg
-#avatar:
+avatar: /images/avatar.jpg
 
 
 # TOC in the Sidebar
@@ -168,10 +168,10 @@ mathjax:
 #baidu_analytics:
 
 # Duoshuo ShortName
-#duoshuo_shortname:
+# duoshuo_shortname:
 
 # Disqus
-#disqus_shortname:
+disqus_shortname: ethancaigithubio
 
 # Baidu Share
 # Available value:
@@ -195,7 +195,7 @@ mathjax:
 #google_analytics:
 
 # CNZZ count
-#cnzz_siteid:
+cnzz_siteid: 1258773405
 
 
 # Make duoshuo show UA
@@ -220,14 +220,14 @@ facebook_sdk:
 
 # Show number of visitors to each article.
 # You can visit https://leancloud.cn get AppID and AppKey.
-leancloud_visitors:
-  enable: false
-  app_id: #<app_id>
-  app_key: #<app_key>
+# leancloud_visitors:
+#   enable: true
+#   app_id:
+#   app_key:
 
 
 # Tencent analytics ID
-# tencent_analytics:
+tencent_analytics: 55756121
 
 # Enable baidu push so that the blog will push the url to baidu automatically which is very helpful for SEO
 baidu_push: false
