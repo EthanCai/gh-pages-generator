@@ -1,12 +1,17 @@
 ---
-title: Study PHP and Symfony on Mac OS X
-date: 2017-05-17 20:00:00
+title: 1 - Install PHP | Study PHP and Symfony on Mac OS X
 tags:
   - php
   - symfony
-tags:
+categories:
   - 软件开发
+date: 2017-05-17 20:00:00
 ---
+
+
+# Introduction
+
+My mac's OS version is macOS Sierra Version 10.12.4
 
 # Environment Requirements
 
