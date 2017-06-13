@@ -1,8 +1,7 @@
 ---
-title: 1 - Install PHP | Study PHP and Symfony on Mac OS X
+title: 1 - Install PHP | Study PHP
 tags:
   - php
-  - symfony
 categories:
   - 软件开发
 date: 2017-05-17 20:00:00
