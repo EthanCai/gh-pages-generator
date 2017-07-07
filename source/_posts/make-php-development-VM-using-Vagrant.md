@@ -97,10 +97,11 @@ Install CentOS 7.2 box
   - http://www.vagrantbox.es/
 - Nginx配置
   - [Nginx Beginner's Guide](http://nginx.org/en/docs/beginners_guide.html)
-  - https://nealpoole.com/blog/2011/04/setting-up-php-fastcgi-and-nginx-dont-trust-the-tutorials-check-your-configuration/
-  - https://segmentfault.com/a/1190000003067656
+  - [Setting up PHP-FastCGI and nginx? Don’t trust the tutorials: check your configuration!](https://nealpoole.com/blog/2011/04/setting-up-php-fastcgi-and-nginx-dont-trust-the-tutorials-check-your-configuration/)
+  - [nginx和php-fpm基础环境的安装和配置](https://segmentfault.com/a/1190000003067656)
 - PHP-FPM配置
   - FastCGI 进程管理器（FPM）配置：http://php.net/manual/zh/install.fpm.configuration.php
   - https://www.nginx.com/resources/wiki/start/topics/examples/phpfcgi/
 - PHP Function Reference／扩展列表
   - http://php.net/manual/en/funcref.php
+- [Debugging with PhpStorm](https://confluence.jetbrains.com/display/PhpStorm/Debugging+with+PhpStorm)
