@@ -58,6 +58,7 @@ date: 2017-07-12 15:26:55
 # 参考
 
 - [Cracking the Coding interview](https://www.slideshare.net/gayle2/cracking-the-coding-interview-college)
+  - [Cracking the Coding Interview 6th Ed. Python Solutions](https://github.com/careercup/CtCI-6th-Edition-Python)
 - [Architecture of Tech Interviews](https://www.slideshare.net/gayle2/architecture-of-tech-interviews)
 - [在AWS面试是怎样一种体验](https://mp.weixin.qq.com/s?__biz=MzA4ODMwMDcxMQ==&mid=2650892256&idx=1&sn=71e0987c7c61ca25c58f586b60de3305)
 - [Amazon Leadership Principles](https://www.amazon.jobs/principles)
