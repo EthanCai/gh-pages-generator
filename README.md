@@ -4,9 +4,27 @@
 
 # 常用操作
 
+```
+> # Create draft
+> hexo new draft "a new blog"
 
+> # Start local server, view blog including draft
+> hexo server --draft
 
-# Hexo相关资源
+> # Publish draft
+> hexo publish "a new blog"
+
+> # Start local server, view blog not including draft
+> hexo server
+
+> # Generate static files
+> hexo generate
+
+> # Deploy website
+> hexo deploy
+```
+
+# 参考
 
 - [hexo.io](https://hexo.io/)
 - [Hexo NexT主题网站](http://theme-next.iissnan.com/)
