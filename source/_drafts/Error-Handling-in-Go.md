@@ -110,7 +110,7 @@ go标准库中提供一些例子：
 - `go/build.NoGoError`: 参考[这里](https://github.com/golang/go/blob/master/src/go/build/build.go#L446)
 - `path/filepath.SkipDir`: 参考[这里](https://github.com/golang/go/blob/master/src/path/filepath/path.go#L331)
 
-这种策略最不灵活的错误处理策略，上层代码会比较返回错误结果和特定值。如果想修改返回的错误值，则会破坏上层调用代码的逻辑。
+这种策略是最不灵活的错误处理策略，上层代码需要判断返回错误值是否等于特定值。如果想修改返回的错误值，则会破坏上层调用代码的逻辑。
 
 ```go
 buf := make([]byte, 100)
@@ -142,16 +142,80 @@ func main() {
 
 > **`error` interface 的 `Error` 方法的输出，是给人看的，不是给机器看的。我们通常会把`Error`方法返回的字符串打印到日志中，或者显示在控制台上。永远不要通过判断`Error`方法返回的字符串是否包含特定字符串，来决定错误处理的方式。**
 
-如果你是开发一个公共库，库的API返回了特定值的错误值。那么必须把这个特定值的错误定义为`public`，写在文档中。“高内聚、低耦合”是衡量公共库质量的一个重要方面，而返回特定错误值的方式，增加了公共库和调用代码的耦合性。让之间产生了依赖。
+如果你是开发一个公共库，库的API返回了特定值的错误值。那么必须把这个特定值的错误定义为`public`，写在文档中。
+
+“高内聚、低耦合”是衡量公共库质量的一个重要方面，而返回特定错误值的方式，增加了公共库和调用代码的耦合性。让模块之间产生了依赖。
 
 
 ### 自定义错误类型
 
-todo
+这种方式的典型用法如下：
 
-### 屏蔽细节的错误
+```go
+// 定义错误类型
+type MyError struct {
+    Msg string
+    File string
+    Line int
+}
 
-todo
+func (e *MyError) Error() string {
+    return fmt.Sprintf("%s:%d: %s", e.File, e.Line, e.Msg)
+}
+
+
+// 被调用函数中
+func doSomething() {
+    // do something
+    return &MyError{"Something happened", "server.go", 42}
+}
+
+// 调用代码中
+err := doSomething()
+if err, ok := err.(SomeType); ok {    // 使用 类型断言 获得错误详细信息
+    //...
+}
+```
+
+这种方式相比于“返回和检查错误值”，很大一个优点在于可以将 底层错误 包起来一起返回给上层，这样可以提供更多的上下文信息。比如`os.PathError`：
+
+```go
+// PathError records an error and the operation
+// and file path that caused it.
+type PathError struct {
+    Op string
+    Path string
+    Err error
+}
+
+func (e *PathError) Error() string
+```
+
+然而，这种方式依然会增加模块之间的依赖。
+
+
+### 不透明的错误处理
+
+这种策略之所以叫“不透明的错误处理”，是因为当上层代码碰到错误发生的时候，不知道错误的内部细节。
+
+**作为调用代码，你需要知道的就是被调用函数是否正常工作。** 如果你认可这个原则，将极大降低模块之间的耦合性。
+
+```go
+import “github.com/quux/bar”
+func fn() error {
+    x, err := bar.Foo()
+    if err != nil {
+        return err
+    }
+    // use x
+}
+```
+
+上面的例子中，`Foo`这个方法不承诺返回的错误的具体内容。这样，`Foo`函数的开发者可以不断调整返回错误的内容来提供更多的错误信息，而不会破坏`Foo`提供的协议。这就是“不透明的错误处理”的内涵。
+
+
+
+
 
 # 参考
 
