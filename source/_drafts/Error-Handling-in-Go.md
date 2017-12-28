@@ -7,11 +7,12 @@ categories:
   - 软件开发
 ---
 
+
+{% asset_img d2a2d12e1a00f819d7fd7af4b536efa2.png %}
+
 # 概述
 
-在实际工程项目中，我们希望通过程序的错误信息快速定位问题，但是又不喜欢错误处理代码写的冗余而又啰嗦。
-
-`Go`语言没有提供像`Java`、`C#`语言中的`try...catch`异常处理方式，而是通过函数返回值逐层往上抛。这种设计，鼓励工程师在代码中显式的检查错误，而非忽略错误，好处就是避免漏掉本应处理的错误。但是带来一个弊端，让代码啰嗦。
+在实际工程项目中，我们希望通过程序的错误信息快速定位问题，但是又不喜欢错误处理代码写的冗余而又啰嗦。`Go`语言没有提供像`Java`、`C#`语言中的`try...catch`异常处理方式，而是通过函数返回值逐层往上抛。这种设计，鼓励工程师在代码中显式的检查错误，而非忽略错误，好处就是避免漏掉本应处理的错误。但是带来一个弊端，让代码啰嗦。
 
 
 # Go标准包提供的错误处理功能
@@ -80,26 +81,28 @@ if err != nil {
 
 # 如何处理错误
 
-go标准包提供的错误处理方式虽然简单，但是在实际项目开发、运维过程中，会碰到一些问题：
+go标准包提供的错误处理方式虽然简单，但是在实际项目开发、运维过程中，会经常碰到如下问题：
 
 - 函数该如何返回错误，是用值，还是用特殊的错误类型
 - 如何检查被调用函数返回的错误，是判断错误值，还是用类型断言
 - 程序中每层代码在碰到错误的时候，是每层都处理，还是只用在最上层处理，如何做到优雅
 - 日志中的异常信息不够完整、缺少stack strace，不方便定位错误原因
 
-我一直思考go语言中该如何处理错误，直到看到了 [Dave Cheney 写的一个演讲文档](https://dave.cheney.net/paste/gocon-spring-2016.pdf)。本章节以下部分内容，主要来自于这篇文档。
+我一直思考`Go`语言中该如何处理错误。下面的内容介绍了生产级`Go`语言代码中如何处理错误。
+
+> 以下内容，主要来自于[Dave Cheney 写的一个演讲文档](https://dave.cheney.net/paste/gocon-spring-2016.pdf)。
 
 
 ## Go语言中三种错误处理策略
 
-go语言中一般有三种错误处理策略：
+`go`语言中一般有三种错误处理策略：
 
-- 返回和检查错误值(sentinel errors)：通过特定值表示成功和不同的错误，上层代码检查错误的值，来判断被调用`func`的执行状态
-- 自定义错误类型(custom error types)：通过自定义的错误类型来表示特定的错误，上层代码通过类型断言判断错误的类型
-- 不透明的错误处理(opaque error handling)：假设上层代码不知道被调用函数返回的错误任何细节，直接再向上返回错误
+- 返回和检查错误值：通过特定值表示成功和不同的错误，上层代码检查错误的值，来判断被调用`func`的执行状态
+- 自定义错误类型：通过自定义的错误类型来表示特定的错误，上层代码通过类型断言判断错误的类型
+- 隐藏内部细节的错误处理：假设上层代码不知道被调用函数返回的错误任何细节，直接再向上返回错误
 
 
-### 返回和检查错误值(Sentinel Errors)
+### 返回和检查错误值
 
 这种方式在其它语言中，也很常见。比如，[C Error Codes in Linux](http://www.virtsync.com/c-error-codes-include-errno)。
 
@@ -194,14 +197,15 @@ func (e *PathError) Error() string
 然而，这种方式依然会增加模块之间的依赖。
 
 
-### 不透明的错误处理
+### 隐藏内部细节的错误处理
 
-这种策略之所以叫“不透明的错误处理”，是因为当上层代码碰到错误发生的时候，不知道错误的内部细节。
+这种策略之所以叫“隐藏内部细节的错误处理”，是因为当上层代码碰到错误发生的时候，不知道错误的内部细节。
 
-**作为调用代码，你需要知道的就是被调用函数是否正常工作。** 如果你认可这个原则，将极大降低模块之间的耦合性。
+**作为上层代码，你需要知道的就是被调用函数是否正常工作。** 如果你接受这个原则，将极大降低模块之间的耦合性。
 
 ```go
 import “github.com/quux/bar”
+
 func fn() error {
     x, err := bar.Foo()
     if err != nil {
@@ -211,10 +215,176 @@ func fn() error {
 }
 ```
 
-上面的例子中，`Foo`这个方法不承诺返回的错误的具体内容。这样，`Foo`函数的开发者可以不断调整返回错误的内容来提供更多的错误信息，而不会破坏`Foo`提供的协议。这就是“不透明的错误处理”的内涵。
+上面的例子中，`Foo`这个方法不承诺返回的错误的具体内容。这样，`Foo`函数的开发者可以不断调整返回错误的内容来提供更多的错误信息，而不会破坏`Foo`提供的协议。这就是“隐藏内部细节”的内涵。
 
 
+## 最合适的错误处理策略
 
+上面我们提到了三种错误处理策略，其中第三种策略耦合性最低。然而，第三种方式也存在一些问题：
+
+- 如何获得更详细错误信息，比如`stack trace`，帮助定位错误原因
+- 如何优雅的处理错误
+    - 有些场景需要了解错误细节，比如网络调用，需要知道是否是瞬时的中断
+    - 是否每层捕捉到错误的时候都需要处理
+
+
+### 如何输出更详细的错误信息
+
+```go
+func AuthenticateRequest(r *Request) error {
+    err := authenticate(r.User)
+    if err != nil {
+        return err  // No such file or directory
+    }
+    return nil
+}
+```
+
+上面这段代码，在我看来，在顶层打印错误的时候，只看到一个类似于"No such file or directory"的文字，从这段文字中，无法了解到错误是哪行代码产生的，也无法知道当时出错的调用堆栈。
+
+我们调整一下代码，如下：
+
+```go
+func AuthenticateRequest(r *Request) error {
+    err := authenticate(r.User)
+    if err != nil {
+        return fmt.Errorf("authenticate failed: %v", err)    // authenticate failed: No such file or directory
+    }
+    return nil
+}
+```
+
+通过`fmt.Errorf`创建一个新的错误，添加更多的上下文信息到新的错误中，但这样仍不能解决上面提出的问题。
+
+这里，我们通过一个很小的包`github.com/pkg/errors`来试图解决上面的问题。这个包提供这样几个主要的API：
+
+```go
+// Wrap annotates cause with a message.
+func Wrap(cause error, message string) error
+
+// Cause unwraps an annotated error.
+func Cause(err error) error
+```
+
+[goErrorHandlingSample](https://github.com/EthanCai/goErrorHandlingSample)这个repo中的例子演示了，不同错误处理方式，输出的错误信息的区别。
+
+```sh
+> go run sample1/main.go
+
+open /Users/caichengyang/.settings.xml: no such file or directory
+exit status 1
+```
+
+```sh
+> go run sample2/main.go
+
+could not read config: open failed: open /Users/caichengyang/.settings.xml: no such file or directory
+exit status 1
+```
+
+```sh
+> go run sample3/main.go
+
+could not read config: open failed: open /Users/caichengyang/.settings.xml: no such file or directory
+exit status 1
+```
+
+```sh
+> go run sample4/main.go
+
+open /Users/caichengyang/.settings.xml: no such file or directory
+open failed
+main.ReadFile
+        /Users/caichengyang/go/src/github.com/ethancai/goErrorHandlingSample/sample4/main.go:15
+main.ReadConfig
+        /Users/caichengyang/go/src/github.com/ethancai/goErrorHandlingSample/sample4/main.go:27
+main.main
+        /Users/caichengyang/go/src/github.com/ethancai/goErrorHandlingSample/sample4/main.go:32
+runtime.main
+        /usr/local/Cellar/go/1.9.2/libexec/src/runtime/proc.go:195
+runtime.goexit
+        /usr/local/Cellar/go/1.9.2/libexec/src/runtime/asm_amd64.s:2337
+could not read config
+main.ReadConfig
+        /Users/caichengyang/go/src/github.com/ethancai/goErrorHandlingSample/sample4/main.go:28
+main.main
+        /Users/caichengyang/go/src/github.com/ethancai/goErrorHandlingSample/sample4/main.go:32
+runtime.main
+        /usr/local/Cellar/go/1.9.2/libexec/src/runtime/proc.go:195
+runtime.goexit
+        /usr/local/Cellar/go/1.9.2/libexec/src/runtime/asm_amd64.s:2337
+exit status 1
+
+```
+
+`sample4/main.go`中将出错的代码行数也打印了出来，这样的日志，可以帮助我们更方便的定位问题原因。
+
+
+### 为了行为断言错误，而非为了类型
+
+在有些场景下，仅仅知道是否出错是不够的。比如，和进程外其它服务通信，需要了解错误的属性，以决定是否需要重试操作。
+
+这种情况下，不要判断错误值或者错误的类型，我们可以判断错误是否实现某个行为。
+
+```go
+type temporary interface {
+    Temporary() bool    // IsTemporary returns true if err is temporary.
+}
+
+func IsTemporary(err error) bool {
+    te, ok := err.(temporary)
+    return ok && te.Temporary()
+}
+```
+
+这种实现方式的好处在于，不需要知道具体的错误类型，也就不需要引用定义了错误类型的三方`package`。如果你是底层代码的开发者，哪天你想更换一个实现更好的`error`，也不用担心影响上层代码逻辑。如果你是上层代码的开发者，你只需要关注`error`是否实现了特定行为，不用担心引用的三方`package`升级后，程序逻辑失败。
+
+习大大说：“听其言、观其行”。小时候父母总是教导：“不要以貌取人”。原来生活中的道理，在程序开发中也是适用的。
+
+
+### 不要忽略错误，也不要重复处理错误
+
+遇到错误，而不去处理，导致信息缺失，会增加后期的运维成本
+
+```go
+func Write(w io.Writer, buf []byte) {
+    w.Write(buf)    // Write(p []byte) (n int, err error)，Write方法的定义见 https://golang.org/pkg/io/#Writer
+}
+```
+
+重复处理，添加了不必要的处理逻辑，导致信息冗余，也会增加后期的运维成本
+
+```go
+func Write(w io.Writer, buf []byte) error {
+    _, err := w.Write(buf)
+    if err != nil {
+        log.Println("unable to write:", err)    // 第1次错误处理
+
+        return err
+    }
+    return nil
+}
+
+func main() {
+    // create writer and read data into buf
+
+    err := Write(w, buf)
+    if err != nil {
+        log.Println("Write error:", err)        // 第2次错误处理
+        os.Exit(1)
+    }
+
+    os.Exit(0)
+}
+```
+
+# 总结
+
+- 使用“隐藏内部细节的错误处理”
+    - 使用`errors.Wrap`封装原始`error`
+    - 使用`errors.Cause`找出原始`error`
+- 为了行为而断言，而不是类型
+- 尽量减少错误值的使用
 
 
 # 参考
