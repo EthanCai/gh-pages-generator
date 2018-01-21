@@ -10,3 +10,4 @@ tags:
 - [Pitfalls of context values and how to avoid or mitigate them in Go](https://www.calhoun.io/pitfalls-of-context-values-and-how-to-avoid-or-mitigate-them/)
 - [Context API explained](https://siadat.github.io/post/context)
 - [Context isn’t for cancellation](https://dave.cheney.net/2017/08/20/context-isnt-for-cancellation)
+- [Death of goroutines under control](https://blog.labix.org/2011/10/09/death-of-goroutines-under-control)
