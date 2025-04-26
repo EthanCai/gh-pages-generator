@@ -3,9 +3,9 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 技术哲学
-subtitle: 文化、风格、艺术
-description: 兼容并包、学以致用
+title: 技术杂谈
+subtitle: 兼容并包、学以致用
+description: 聊聊技术
 author: Ethan Cai
 language: zh-Hans
 timezone:

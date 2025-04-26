@@ -1,10 +1,10 @@
 ---
 title: Golang中遇到的一些关于JSON处理的坑
+categories:
+  - 编程开发
 tags:
   - golang
   - json
-categories:
-  - 软件开发
 date: 2016-06-23 08:09:39
 ---
 
@@ -266,7 +266,7 @@ user.FansCount = &fansCount
 
 [JSON的规范](http://json.org/)中，对于数字类型，并不区分是整型还是浮点型。
 
-![](http://json.org/value.gif)
+![](https://www.json.org/img/value.png)
 
 对于如下JSON文本:
 

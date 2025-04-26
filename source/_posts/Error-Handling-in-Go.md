@@ -1,10 +1,9 @@
 ---
 title: Go语言中的错误处理（Error Handling in Go）
-tags:
-  - coding
-  - go
 categories:
-  - 软件开发
+  - 编程开发
+tags:
+  - golang
 date: 2017-12-29 10:23:06
 ---
 

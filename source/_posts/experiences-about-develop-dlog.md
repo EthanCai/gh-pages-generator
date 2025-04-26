@@ -1,10 +1,9 @@
 ---
 title: 记一次结对开发Golang组件的过程
-tags:
-  - data log
-  - golang
 categories:
-  - 软件开发
+  - 编程开发
+tags:
+  - golang
 date: 2016-04-20 02:09:39
 ---
 
